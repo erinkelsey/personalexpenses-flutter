@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import './widgets/transaction_list.dart';
 import './widgets/new_transaction.dart';
 import './models/transaction.dart';
+import './widgets/chart.dart';
 
 void main() {
   runApp(MyApp());
@@ -62,6 +63,16 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
   ];
 
+  List<Transaction> get _recentTransactions {
+    return _userTransactions.where((element) {
+      return element.date.isAfter(
+        DateTime.now().subtract(
+          Duration(days: 7)
+        ),
+      );
+    }).toList();
+  }
+
   void _addNewTransaction(String txTitle, double txAmount){
     final newTx = Transaction(
       title: txTitle, 
@@ -112,11 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Container(
               constraints: BoxConstraints(minWidth: 600, maxWidth: 1500),
-              child: Card(
-                child: Text('CHARTTT'),
-                color: Colors.blue,
-                elevation: 5,
-              )
+              child: Chart(_recentTransactions),
             ),
             TransactionList(_userTransactions),
           ],
