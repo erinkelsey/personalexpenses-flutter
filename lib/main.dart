@@ -117,16 +117,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: SingleChildScrollView(
+        child: Container(
+          alignment: Alignment.topCenter,
           child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          // crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Container(
-              constraints: BoxConstraints(minWidth: 600, maxWidth: 1500),
-              child: Chart(_recentTransactions),
-            ),
-            TransactionList(_userTransactions),
-          ],
+            children: <Widget>[
+              Container(
+                constraints: BoxConstraints(minWidth: 400, maxWidth: 400),
+                child: Chart(_recentTransactions),
+              ),
+              TransactionList(_userTransactions),
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: !kIsWeb ? FloatingActionButtonLocation.centerFloat : FloatingActionButtonLocation.endFloat,

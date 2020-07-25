@@ -11,7 +11,7 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // constraints: BoxConstraints(minWidth: 400, maxWidth: 500),
+      constraints: BoxConstraints(minWidth: 400, maxWidth: 500),
       height: 300,
       child: Scrollbar(
         child: transactions.isEmpty ? Column(children: <Widget>[
