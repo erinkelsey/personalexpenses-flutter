@@ -23,7 +23,10 @@ class MyApp extends StatelessWidget {
           headline6: TextStyle(
             fontFamily: 'OpenSans', 
             fontSize: 18, 
-          )
+          ),
+          button: TextStyle(
+            color: Colors.white,
+          ),
         ),
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
@@ -48,20 +51,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _userTransactions = [
-    // Transaction(
-    //   id: 't1', 
-    //   title: 'New Shoes', 
-    //   amount: 69.99, 
-    //   date: DateTime.now()
-    // ),
-    // Transaction(
-    //   id: 't2', 
-    //   title: 'Weekly Groceries', 
-    //   amount: 120.59, 
-    //   date: DateTime.now()
-    // ),
-  ];
+  final List<Transaction> _userTransactions = [];
 
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((element) {
@@ -73,11 +63,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(String txTitle, double txAmount){
+  void _addNewTransaction(String txTitle, double txAmount, DateTime txDate){
     final newTx = Transaction(
       title: txTitle, 
       amount: txAmount, 
-      date: DateTime.now(),
+      date: txDate,
       id: DateTime.now().toString(),
     );
 
@@ -104,6 +94,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _deleteTransaction(String id){
+    setState(() {
+      _userTransactions.removeWhere((element) => element.id == id);
+    });
+  } 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 constraints: BoxConstraints(minWidth: 400, maxWidth: 400),
                 child: Chart(_recentTransactions),
               ),
-              TransactionList(_userTransactions),
+              TransactionList(_userTransactions, _deleteTransaction),
             ],
           ),
         ),

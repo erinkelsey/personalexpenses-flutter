@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class NewTransaction extends StatefulWidget {
@@ -11,25 +13,51 @@ class NewTransaction extends StatefulWidget {
 }
 
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  DateTime _selectedDate;
 
-  final amountController = TextEditingController();
+  void _submitData() {
+    if (_amountController.text.isEmpty){
+      return;
+    }
 
-  void submitData() {
-    final enteredTitle = titleController.text;
-    final enteredAmount = double.parse(amountController.text);
+    final enteredTitle = _titleController.text;
+    double enteredAmount = double.parse(_amountController.text);
 
     // validation
-    if (enteredTitle.isEmpty || enteredAmount <= 0){
+    if (enteredTitle.isEmpty 
+          || enteredAmount <= 0
+          || _selectedDate == null){
       return;
     }
 
     widget.addTx(
       enteredTitle, 
-      enteredAmount
+      enteredAmount,
+      _selectedDate,
     );
 
+    // close modal/bottom sheet
     Navigator.of(context).pop();
+  }
+
+  void _presentDatePicker(){
+    showDatePicker(
+      context: context, 
+      initialDate: DateTime.now(), 
+      firstDate: DateTime(2020), 
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null){
+        return;
+      }
+
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+      
+    });
   }
 
   @override
@@ -38,28 +66,51 @@ class _NewTransactionState extends State<NewTransaction> {
       elevation: !kIsWeb ? 5 : 0,
       child: Container(
         height: !kIsWeb ? 400 : null,
-        constraints:  kIsWeb ? BoxConstraints(minWidth: 400, maxWidth: 500, maxHeight: 200, minHeight: 200) : null,
+        constraints:  kIsWeb ? BoxConstraints(minWidth: 400, maxWidth: 500, maxHeight: 260, minHeight: 260) : null,
         padding: EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             TextField(
               decoration: InputDecoration(labelText: 'Title'),
-              controller: titleController,
-              onSubmitted: (_) => submitData(),
+              controller: _titleController,
+              onSubmitted: (_) => _submitData(),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Amount'),
               // onChanged: (value) => amountInput = value,
-              controller: amountController,
+              controller: _amountController,
               // keyboardType: TextInputType.numberWithOptions(signed:true, decimal:true),
               keyboardType: TextInputType.numberWithOptions(decimal:true),
-              onSubmitted: (_) => submitData(),
+              onSubmitted: (_) => _submitData(),
             ),
-            FlatButton(
+            Container(
+              height: 70,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      _selectedDate == null 
+                        ? 'No Date Chosen!' 
+                        : 'Picked Date: ${DateFormat.yMMMd().format(_selectedDate)}',
+                    ),
+                  ),
+                  FlatButton(
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text(
+                      'Choose Date',
+                      style: TextStyle(fontWeight: FontWeight.bold,),
+                    ),
+                    onPressed: _presentDatePicker,
+                  ),
+                ],
+              ),
+            ),
+            RaisedButton(
               child: Text('Add Transaction'), 
-              onPressed: submitData,
-              textColor: Colors.purple,
+              onPressed: _submitData,
+              color: Theme.of(context).primaryColor,
+              textColor: Theme.of(context).textTheme.button.color,
             ),
           ]
         ),
